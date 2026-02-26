@@ -10,6 +10,7 @@ using std::string;
 using std::filesystem::path;
 
 enum class ProblemForm {
+    NONE,
     GENERAL,
     CANONIC, 
     SYMMETRIC,
@@ -24,7 +25,6 @@ private:
     vector<double> rhs_;
     vector<string> var_constraints_;
 
-    static string form_to_string(ProblemForm form);
 public:
     LinearProblem() = default;
     LinearProblem(bool problem_type,
@@ -36,6 +36,7 @@ public:
 
     static LinearProblem read_from_file(const path& file);
     static LinearProblem read_form_console();
+    static string form_to_string(ProblemForm form);
 
     // getters
     
@@ -56,12 +57,48 @@ public:
     const auto& rhs() const { return rhs_; }
     const auto& var_constaints() const { return var_constraints_; }
 
-    auto getM1() const;
-    auto getM2() const;
-    auto getN1() const;
-    auto getN2() const;
 
-    auto getForm() const;
+    auto getM1() const {
+        vector<std::size_t> res;
+        for(int i = 0; i < constraint_type_.size(); ++i) {
+            if(constraint_type_[i] == ">=") {
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+
+    auto getM2() const {
+        vector<std::size_t> res;
+        for(int i = 0; i < constraint_type_.size(); ++i) {
+            if(constraint_type_[i] == "=") {
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+
+    auto getN1() const { 
+        vector<std::size_t> res;
+        for(int i = 0; i < var_constraints_.size(); ++i) {
+            if(var_constraints_[i] == ">=0") {
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+
+    auto getN2() const {
+        vector<std::size_t> res;
+        for(int i = 0; i < var_constraints_.size(); ++i) {
+            if(var_constraints_[i] != ">=0") {
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+
+    ProblemForm getForm() const;
 
     void print(const string& title) const;
 };

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 
 #include "LinearProblem.hpp"
 
@@ -301,55 +302,53 @@ LinearProblem LinearProblem::read_form_console() {
 
 }
 
-auto LinearProblem::getM1() const {
-    vector<std::size_t> res;
-    for(int i = 0; i < constraint_type.size(); ++i) {
-        if(constraint_type[i] == "<=" {
-            res.push_back(i);
-        }
+ProblemForm LinearProblem::getForm() const {
+    
+    bool all_equalities = std::ranges::all_of(constraint_type_, [](const auto& str) { return str == "="; });
+    
+    bool all_nonnegative = std::ranges::all_of(var_constraints_, [](const auto& str) { return str == ">=0"; });
+    
+    if (all_equalities && all_nonnegative) {
+        return ProblemForm::CANONIC;
     }
-    return res;
-
+    
+    bool all_geq = std::ranges::all_of(constraint_type_, [](const auto& str) { return str == ">="; });
+    
+    if (all_geq && all_nonnegative) {
+        return ProblemForm::SYMMETRIC;
+    }
+    
+    bool has_only_allowed_constraints = std::ranges::all_of(constraint_type_, [](const auto& str) { return str == ">=" || str == "="; }); 
+    
+    bool valid_sign_constraints = std::ranges::all_of(var_constraints_, [](const auto& str) { return str == ">=0" || str == "free"; });
+    
+    if (has_only_allowed_constraints && valid_sign_constraints) {
+        return ProblemForm::GENERAL;
+    }
+    
+    return ProblemForm::NONE;
 }
 
-auto LinearProblem::getM2() const {
-    vector<std::size_t> res;
-    for(int i = 0; i < constraint_type.size(); ++i) {
-        if(constraint_type[i] == "=" {
-            res.push_back(i);
-        }
+string LinearProblem::form_to_string(ProblemForm f) {
+    switch(f) {
+        case ProblemForm::GENERAL:
+            return "General";
+        case ProblemForm::SYMMETRIC:
+            return "Symmetric";
+        case ProblemForm::CANONIC:
+            return "Canonic";
+        case ProblemForm::NONE:
+            return "Nane";
     }
-    return res;
 }
 
-auto LinearProblem::getN1() const { 
-    vector<std::size_t> res;
-    for(int i = 0; i < var_constraint.size(); ++i) {
-        if(var_constraint[i] == ">=" {
-            res.push_back(i);
-        }
-    }
-    return res;
-}
-
-auto LinearProblem::getN2() const {
-    vector<std::size_t> res;
-    for(int i = 0; i < var_constraint.size(); ++i) {
-        if(var_constraint[i] != ">=" {
-            res.push_back(i);
-        }
-    }
-    return res;
-}
-
-auto LinearProblem::getForm() const {}
 
 void LinearProblem::print(const std::string& title) const {
     std::cout << "\n" << std::string(50, '=') << std::endl;
     std::cout << title << std::endl;
     std::cout << std::string(50, '=') << std::endl;
     
-    std::cout << "Тип задачи: " << (problem_type_ ? "MAXIMIZATION" : "MINIMIZATION") << std::endl;
+    std::cout << "Тип задачи: " << (!problem_type_ ? "MAXIMIZATION" : "MINIMIZATION") << std::endl;
     
     std::cout << "\nЦелевая функция:\n  ";
     if (!problem_type_) std::cout << "min  ";
