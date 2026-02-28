@@ -351,7 +351,7 @@ void LinearProblem::print(const std::string& title) const {
     std::cout << "Тип задачи: " << (!problem_type_ ? "MAXIMIZATION" : "MINIMIZATION") << std::endl;
     
     std::cout << "\nЦелевая функция:\n  ";
-    if (!problem_type_) std::cout << "min  ";
+    if (problem_type_) std::cout << "min  ";
     else std::cout << "max  ";
     
     std::cout << "Z = ";

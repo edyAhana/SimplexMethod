@@ -12,6 +12,7 @@ public:
     static LinearProblem to_general(const LinearProblem& lp);
     static LinearProblem to_canonical(const LinearProblem& lp);
     static LinearProblem to_symmetrical(const LinearProblem& lp);
+    static LinearProblem to_dual(const LinearProblem& lp);
 };
 
 

@@ -40,8 +40,8 @@ public:
 
     // getters
     
-    auto num_constraints() { return constraints_.size(); }
-    auto num_variables() { return target_.size(); }
+    auto num_constraints() const  { return constraints_.size(); }
+    auto num_variables() const  { return target_.size(); }
 
     auto& type() { return problem_type_; }
     auto& target() { return target_; }
@@ -96,6 +96,17 @@ public:
             }
         }
         return res;
+    }
+
+    void prettierCoeffs() {
+        for (int i = 0; i < constraints_.size(); i++) {
+            if (constraint_type_[i] == "=" && rhs_[i] <= 0.0) {
+                for (double& j : constraints_[i]) {
+                    j = -j;
+                }
+                rhs_[i] = -rhs_[i];
+            }
+        }
     }
 
     ProblemForm getForm() const;
