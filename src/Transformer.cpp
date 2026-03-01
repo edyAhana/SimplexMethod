@@ -208,7 +208,8 @@ LinearProblem Transformer::to_symmetrical_form(const LinearProblem& lp) {
     return general;
 }
 
-LinearProblem Transformer::to_dual(const LinearProblem& lp) {
+LinearProblem Transformer::to_dual(const LinearProblem& problem) {
+    auto lp = to_general(problem);
     auto& target = lp.target();
     auto& constraints = lp.constraints();
     auto& constraint_type = lp.constraint_type();
@@ -224,8 +225,6 @@ LinearProblem Transformer::to_dual(const LinearProblem& lp) {
     vector<vector<double>> new_constraints(num_vars, vector<double>(num_cons));
     vector<string> new_constraint_type(num_vars);
     vector<string> new_var_constraints(num_cons);
-    // vector<string> new_constraint_type(num_vars);
-    // vector<string> new_var_constraints(num_cons);
     
     bool new_type = !lp.type();
 
