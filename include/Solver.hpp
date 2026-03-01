@@ -22,7 +22,7 @@ private:
             std::vector<size_t> basis;
             double objective_value;
     };
-
+public:
     struct Solution {
         std::vector<double> x;
         double objective_value;

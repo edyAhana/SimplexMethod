@@ -1,5 +1,19 @@
 #include "Helpers.hpp"
 
+void print_val_with_err(const double val1, const double val2) {
+    double err = std::abs(val1 - val2) / 2;
+    double avg = (val1 + val2) / 2;
+
+    const double exponent = std::floor(std::log10(err));
+    const auto precision = std::clamp(-exponent, 4.0, 10.0);
+    const double factor = std::pow(10.0, -precision - 1); // Сохраняем 2 значащие цифры
+    err = std::round(err / factor) * factor;
+    avg = std::round(avg / factor) * factor;
+    std::cout << std::fixed << std::setprecision(precision) << avg << " +- " << err << std::endl;
+    const double rel_err = (err / std::abs(avg)) * 100.0;
+    std::cout << "Real error: " << std::fixed << std::setprecision(2) << rel_err << " %" << std::endl;
+}
+
 std::vector<double> restore_original_solution(const LinearProblem& original_lp,
                                                      const std::vector<double>& canonical_solution) {
     const int n_orig = original_lp.num_variables();

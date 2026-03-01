@@ -8,6 +8,8 @@
 std::vector<double> restore_original_solution(const LinearProblem& original_lp,
                                                      const std::vector<double>& canonical_solution);
 
+void print_val_with_err(const double val1, const double val2);
+
 template <typename T>
 void print_vector(const std::vector<T>& v) {
     std::cout << "(";
